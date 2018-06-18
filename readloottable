@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Map qw(map_file);
+use JSON::PP;
+use Data::Dumper;
+
+my $datafile='wfdrops.json';
+
+# map the data file...
+map_file( my $datain, $datafile, '<' );
+my $data = {};
+$data = decode_json( $datain );
+
+## main tables ##
+# enemyBlueprintTables
+# keyRewards
+# transientRewards
+# relics
+# modLocations
+# blueprintLocations
+# cetusBountyRewards
+# miscItems
+# sortieRewards
+# missionRewards
+# enemyModTables
+
+
+foreach my $key ( keys(%{$data->{missionRewards}->{Uranus}->{Stephano}->{rewards}}) ) {
+    print( "$key\n" );
+}
+
+print Dumper( $data->{missionRewards}->{Uranus}->{Stephano}->{rewards}->{C} ), "\n";
+
+exit;
