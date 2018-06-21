@@ -1,0 +1,54 @@
+** main tables
++ enemyBlueprintTables
++ keyRewards
++ transientRewards
++ relics
++ modLocations
++ blueprintLocations
++ cetusBountyRewards
++ miscItems
++ sortieRewards
++ missionRewards
++ enemyModTables
+
+so to look up the best places to farm an item, we need a searchable
+list of items... that means reading all
+$data->{missionRewards}->{[planet]}->{[location]}->{rewards}->{(A|B|C)}->{itemName}
+and corresponding ->{chance}.  But we have to store *all* that
+information in a reverse kind of map... it's not enough to know I
+have an "Axi N5 Relic" at 6.2% chance, I have to know what
+planet/location/table that particular item/chance combo is located
+at.
+
+so I'm thinking a reverse drop table keyed by itemName... except
+then we have the reverse problem.  The Convulsion mod shows up 27
+times in the drop tables.  Not even planet/location is unique,
+because the same item can show up in multiple A/B/C tables... so I'm
+picturing having to traverse a lot of data just to gather all the
+odds.  Plus, say I want to view just defense missions, etc.
+
+{itemName}->
+
+Hm... maybe I want a hash of pointers back into the original data
+structure.  It would certainly save on space and processing time.
+Except pointing to the {location}, that node doesn't know it's
+{planet}.  I'd have to insert {planet} pointers back up... otherwise
+the hash is a one-way tree.
+
+frustrating... *most* {rewards} contain a hash of {A|B|C} tables,
+but some like Assassination missions (Tolstoj) just contain an array
+of.  So you have to probe {rewards} to see if it's a hash or an
+array.
+
+it almost seems like it'd be easier to read the original HTML tables
+than to parse this data structure.  A pointer into the {location}
+can't tell you the {planet}.  I almost feel like a quick-and-dirty
+shell script would be easier to write than Perl to parse this.
+
+so two approaches... I take my search string and as I traverse the
+tree, I build my data structure based on reward-name-first.  This is
+a good approach if I'm going to run once and exit (which is likely).
+
+If I'm going to run multiple searches before exiting, it would make
+sense to just rebuild the entire data structure from a
+reward-name-first viewpoint.

@@ -6,30 +6,44 @@ use JSON::PP;
 use Data::Dumper;
 
 my $datafile='wfdrops.json';
+my $searchstring = shift(@ARGV);
 
 # map the data file...
 map_file( my $datain, $datafile, '<' );
 my $data = {};
 $data = decode_json( $datain );
 
-## main tables ##
-# enemyBlueprintTables
-# keyRewards
-# transientRewards
-# relics
-# modLocations
-# blueprintLocations
-# cetusBountyRewards
-# miscItems
-# sortieRewards
-# missionRewards
-# enemyModTables
-
-
-foreach my $key ( keys(%{$data->{missionRewards}->{Uranus}->{Stephano}->{rewards}}) ) {
-    print( "$key\n" );
+foreach my $planet ( keys(%{$data->{missionRewards}}) ) {
+    print( "$planet\n" );
+    foreach my $location ( keys(%{$data->{missionRewards}->{$planet}}) ) {
+        print( "  $location\n" );
+        dumpLoot($data->{missionRewards}->{$planet}->{$location}->{rewards});
+    }
 }
 
-print Dumper( $data->{missionRewards}->{Uranus}->{Stephano}->{rewards}->{C} ), "\n";
+# dumpLoot: receive a "rewards", figure out if it's hash or array, dump it
+sub dumpLoot {
+    my $rewards = shift(@_);
+    my $table;
+    if ( ref( $rewards ) eq "HASH" ) {
+        # a hash containing {A|B|C}, probably
+        foreach my $table (sort(keys(%{$rewards}))) {
+            print( "    $table\n" );
+            dumpRewardsTable($rewards->{$table});
+        }
+    } else {
+        # an array of hashes
+        dumpRewardsTable($rewards);
+    }
 
+}
+#         if ( $item->{itemName} =~ /.*$searchstring.*/i ) {
+
+sub dumpRewardsTable {
+    # stupid tables can be an empty array instead of an array of hashes
+    my $list = shift(@_);
+    while ( my $item = shift(@{$list}) ) {
+        print( "      $item->{itemName} : $item->{chance} \n" );
+    }
+}
 exit;
