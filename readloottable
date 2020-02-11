@@ -14,9 +14,9 @@ my $data = {};
 $data = decode_json( $datain );
 
 foreach my $planet ( keys(%{$data->{missionRewards}}) ) {
-    print( "$planet\n" );
+    print( "planet: $planet\n" );
     foreach my $location ( keys(%{$data->{missionRewards}->{$planet}}) ) {
-        print( "  $location\n" );
+        print( "  location: $location\n" );
         dumpLoot($data->{missionRewards}->{$planet}->{$location}->{rewards});
     }
 }
@@ -28,7 +28,7 @@ sub dumpLoot {
     if ( ref( $rewards ) eq "HASH" ) {
         # a hash containing {A|B|C}, probably
         foreach my $table (sort(keys(%{$rewards}))) {
-            print( "    $table\n" );
+            print( "   rotation: $table\n" );
             dumpRewardsTable($rewards->{$table});
         }
     } else {
