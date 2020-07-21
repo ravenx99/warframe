@@ -16,7 +16,8 @@ $data = decode_json( $datain );
 foreach my $planet ( keys(%{$data->{missionRewards}}) ) {
     print( "planet: $planet\n" );
     foreach my $location ( keys(%{$data->{missionRewards}->{$planet}}) ) {
-        print( "  location: $location\n" );
+        print( "  location: $location ",
+               "($data->{missionRewards}->{$planet}->{$location}->{gameMode})\n" );
         dumpLoot($data->{missionRewards}->{$planet}->{$location}->{rewards});
     }
 }
