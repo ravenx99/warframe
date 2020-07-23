@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Map qw(map_file);
+use JSON::PP;
+use Data::Dumper;
+
+my $datafile='wfdrops.json';
+my $searchstring = shift(@ARGV);
+
+# map the data file...
+map_file( my $datain, $datafile, '<' );
+my $data = {};
+$data = decode_json( $datain );
+
+my( $planet_out, $location_out, $rotation_out );
+
+foreach my $planet ( keys(%{$data->{missionRewards}}) ) {
+    $planet_out = "planet: $planet\n";
+    foreach my $location ( keys(%{$data->{missionRewards}->{$planet}}) ) {
+        $location_out = "  location: $location ($data->{missionRewards}->{$planet}->{$location}->{gameMode})\n";
+        dumpLoot($data->{missionRewards}->{$planet}->{$location}->{rewards});
+    }
+}
+
+# dumpLoot: receive a "rewards", figure out if it's hash or array, dump it
+sub dumpLoot {
+    my $rewards = shift(@_);
+    my $table;
+    if ( ref( $rewards ) eq "HASH" ) {
+        # a hash containing {A|B|C}, probably
+        foreach my $table (sort(keys(%{$rewards}))) {
+            $rotation_out = "   rotation: $table\n";
+            dumpRewardsTable($rewards->{$table});
+        }
+    } else {
+        # an array of hashes
+        $rotation_out = '';
+        dumpRewardsTable($rewards);
+    }
+
+}
+
+sub dumpRewardsTable {
+    # stupid tables can be an empty array instead of an array of hashes
+    my $list = shift(@_);
+    while ( my $item = shift(@{$list}) ) {
+        if ( $item->{itemName} =~ /$searchstring/ ) {
+            print( $planet_out,
+                   $location_out,
+                   $rotation_out,
+                   "      $item->{itemName} : $item->{chance} \n" );
+        }
+    }
+}
+exit;
