@@ -6,7 +6,9 @@ use JSON::PP;
 use Data::Dumper;
 
 my $datafile='wfdrops.json';
-my $searchstring = shift(@ARGV);
+my $searchstring = join(' ', @ARGV);
+
+print "$searchstring\n";
 
 # map the data file...
 map_file( my $datain, $datafile, '<' );

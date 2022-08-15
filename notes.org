@@ -52,3 +52,7 @@ a good approach if I'm going to run once and exit (which is likely).
 If I'm going to run multiple searches before exiting, it would make
 sense to just rebuild the entire data structure from a
 reward-name-first viewpoint.
+
+grep -e location: -e rotation: -e 'Meso N1' foo.txt |grep -B1 -e location: -e 'Meso N10' |grep -v -- -- |grep -B2 'Meso N10' |grep -v -- --
+
+This will more or less pick out only the info needed for those relics.

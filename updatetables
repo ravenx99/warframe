@@ -1,0 +1,4 @@
+#!/bin/bash
+
+wget -O - http://drops.warframestat.us/data/all.json |json_pp >wfdrops.json
+
