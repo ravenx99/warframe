@@ -1,3 +1,5 @@
+* This is just developer notes
+
 ** main tables
 + enemyBlueprintTables
 + keyRewards
